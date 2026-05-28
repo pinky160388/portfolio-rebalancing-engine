@@ -1,31 +1,37 @@
-from src.rebalance import Security, rebalance_portfolio
+class Security:
+
+    def __init__(self, name, target_pct, current_pct, unit_price):
+        self.name = name
+        self.target_pct = target_pct
+        self.current_pct = current_pct
+        self.unit_price = unit_price
 
 
-def test_ibm_should_buy():
-    portfolio = [
-        Security("IBM", 20, 10, 150)
-    ]
-
-    result = rebalance_portfolio(portfolio)
-
-    assert result["IBM"]["action"] == "BUY"
+TOTAL_ASSET = 100000
 
 
-def test_orcl_should_sell():
-    portfolio = [
-        Security("ORCL", 20, 30, 220)
-    ]
+def rebalance_portfolio(portfolio):
 
-    result = rebalance_portfolio(portfolio)
+    results = {}
 
-    assert result["ORCL"]["action"] == "SELL"
+    for security in portfolio:
 
+        variance = security.target_pct - security.current_pct
 
-def test_no_action_needed():
-    portfolio = [
-        Security("MSFT", 20, 20, 90)
-    ]
+        rebalance_amount = (variance / 100) * TOTAL_ASSET
 
-    result = rebalance_portfolio(portfolio)
+        shares = round(abs(rebalance_amount / security.unit_price))
 
-    assert result["MSFT"]["action"] == "HOLD"
+        if variance > 0:
+            action = "BUY"
+        elif variance < 0:
+            action = "SELL"
+        else:
+            action = "HOLD"
+
+        results[security.name] = {
+            "action": action,
+            "shares": shares
+        }
+
+    return results
