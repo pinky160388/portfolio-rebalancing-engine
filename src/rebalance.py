@@ -21,7 +21,7 @@ def calculate_shares_to_trade(security: Security) -> int:
     Positive variance => SELL
     """
 
-    variance_percent = security.current_percent - security.target_percent
+    variance_percent = security.target_percent - security.current_percent
 
     variance_amount = (variance_percent / 100) * TOTAL_ASSET
 
